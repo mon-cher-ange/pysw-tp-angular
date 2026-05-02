@@ -1,0 +1,142 @@
+<div class="container">
+  <section class="bg-body-secondary p-4">
+    <h2 class="fw-bold text-body-emphasis pb-4">Inscripción a Curso</h2>
+    <form #enrollmentForm="ngForm" (ngSubmit)="registerEnrollment()" style="min-width: 400px;">
+      <div class="mb-3">
+        <label class="form-label" for="dni">DNI</label>
+        <input class="form-control"
+               type="text"
+               id="dni"
+               name="dni"
+               placeholder="Ej. 40321654"
+               [(ngModel)]="formEnrollment.dni"
+               required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="price">Precio</label>
+        <input class="form-control"
+               type="number"
+               id="price"
+               name="price"
+               placeholder="Ej. 700,45"
+               [(ngModel)]="formEnrollment.price"
+               (ngModelChange)="calculatePayment()"
+               required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="studentCategory">Categoria</label>
+        <select class="form-select"
+                id="studentCategory"
+                name="studentCategory"
+                [(ngModel)]="formEnrollment.studentCategory"
+                (ngModelChange)="calculatePayment()">
+          <option value="0" disabled>Escoge...</option>
+          <option value="1">Estudiante</option>
+          <option value="2">Egresado</option>
+          <option value="3">Particular</option>
+        </select>
+      </div>
+      @if (formEnrollment.price > 0 && formEnrollment.studentCategory > 0) {
+        <div class="d-flex flex-column bg-body-tertiary rounded-2 border-light-subtle border p-2">
+          <small class="text-body-secondary">Total a pagar</small>
+          <p class="mb-0 text-body-emphasis">{{ formEnrollment.totalPaid | currency:'ARS' }}</p>
+        </div>
+      }
+      <div class="mb-3">
+        <label for="enrollmentDate" class="form-label">Fecha de inscripción</label>
+        <input class="form-control"
+               type="date"
+               id="enrollmentDate"
+               name="enrollmentDate"
+               [(ngModel)]="formEnrollment.enrollmentDate"
+               required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input class="form-control"
+               type="email"
+               id="email"
+               name="email"
+               placeholder="Ej. nombre@dominio.com"
+               [(ngModel)]="formEnrollment.email"
+               required>
+      </div>
+      <div class="mb-3">
+        <label for="course" class="form-label">Curso</label>
+        <input class="form-control"
+               type="text"
+               id="course"
+               name="course"
+               placeholder="Ej. Matemáticas"
+               [(ngModel)]="formEnrollment.course"
+               required>
+      </div>
+      <button type="submit"
+              [disabled]="!enrollmentForm.valid"
+              class="btn btn-light">Registrar
+      </button>
+    </form>
+  </section>
+  <hr>
+  <section class="bg-body-secondary p-4">
+    <h2 class="fw-bold text-body-emphasis pb-4">Inscripciones realizadas</h2>
+    <div class="table-responsive rounded">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th scope="col">DNI</th>
+          <th scope="col">Precio</th>
+          <th scope="col">Categoria</th>
+          <th scope="col">Fecha de inscripción</th>
+          <th scope="col">Correo electrónico</th>
+          <th scope="col">Curso</th>
+          <th scope="col" class="text-end">Total a pagar</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (enrollment of enrollmentData; track enrollment.id) {
+            <tr>
+              <th scope="row">{{ enrollment.dni }}</th>
+              <td>{{ enrollment.price | currency:'ARS' }}</td>
+              <td>
+                <span class="badge text-bg-secondary">{{ getCategoryName(enrollment.studentCategory) }}</span>
+              </td>
+              <td>{{ enrollment.enrollmentDate | date:'dd/MM/yyyy' }}</td>
+              <td>{{ enrollment.email }}</td>
+              <td>{{ enrollment.course }}</td>
+              <td class="text-end fw-bold">{{ enrollment.totalPaid | currency:'ARS' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="text-center text-body-secondary">
+                No hay registros actualmente.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <hr>
+  <section class="bg-body-secondary p-4">
+    <h2 class="fw-bold text-body-emphasis pb-4">Resumen de inscripciones</h2>
+    <ul class="list-group">
+      <li class="list-group-item d-flex align-items-center gap-2 ">
+        <h6 class="fw-bold mb-1">Estudiantes</h6>
+        <span class="ms-auto badge text-bg-light">{{ getSummary.students }}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-2 ">
+        <h6 class="fw-bold mb-1">Egresados</h6>
+        <span class="ms-auto badge text-bg-light">{{ getSummary.graduates }}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-2 ">
+        <h6 class="fw-bold mb-1">Particulares</h6>
+        <span class="ms-auto badge text-bg-light">{{ getSummary.private }}</span>
+      </li>
+      <li class="list-group-item d-flex align-items-center gap-2 ">
+        <h6 class="fw-bold mb-1">Total general</h6>
+        <span class="ms-auto badge text-bg-light">{{ getSummary.totalPaid | currency:'ARS' }}</span>
+      </li>
+    </ul>
+  </section>
+</div>

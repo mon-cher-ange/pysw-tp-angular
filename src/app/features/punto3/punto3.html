@@ -1,0 +1,46 @@
+<div class="bg-body-secondary p-4">
+  <section class="container">
+    <div class="d-flex flex-column justify-content-between align-items-start gap-2 pb-4">
+      <h2 class="fw-bold text-body-emphasis">Juego de la memoria</h2>
+      <div class="d-flex gap-4">
+        <button class="btn btn-light"
+                [class.disabled]="gameStarted"
+                (click)="playGame()">
+          Jugar<span class="badge text-bg-dark ms-2">Intentos restantes {{ tries }}</span>
+        </button>
+        <button class="btn btn-light"
+                [class.disabled]="!gameStarted"
+                (click)="resetGame()">Reiniciar</button>
+      </div>
+    </div>
+    @if (gameEnded) {
+      @if (gameWon) {
+        <p class="fw-bold text-body-emphasis">¡Ganaste el juego!</p>
+      } @else {
+        <p class="text-body-secondary">Has perdido, mejor suerte para la proxima.</p>
+      }
+    }
+    @if (!gameStarted) {
+      <p class="text-body-secondary">
+        Presionar <span class="text-body-emphasis">Jugar</span> para iniciar el juego.
+      </p>
+    } @else {
+      <div class="row g-4 justify-content-center">
+        @for (card of board; track card.id) {
+          <div class="board-card col-6 col-sm-3 col-md-4"
+               [class.flipped]="card.flipped"
+               (click)="flipCard(card)">
+            <div class="card-inner border border-light-subtle bg-body-tertiary position-relative">
+              <div class="card-front d-flex justify-content-center align-items-center position-absolute">
+                <i class="bi bi-card-image"></i>
+              </div>
+              <div class="card-back d-flex justify-content-center align-items-center position-absolute">
+                <i class="{{ card.value }}"></i>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+</div>
