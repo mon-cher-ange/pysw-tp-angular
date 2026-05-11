@@ -32,8 +32,7 @@ export class Enrollment {
 
   private findNextId(): number {
     return this._enrollments.reduce(
-      (max: number, e: EnrollmentModel) => (e.id > max ? e.id : max),
-      -1,
+      (max: number, e: EnrollmentModel): number => (e.id > max ? e.id : max), -1
     ) + 1;
   }
 }
