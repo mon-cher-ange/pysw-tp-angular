@@ -10,7 +10,7 @@
     <div class="carousel-inner">
       @for (event of events; track $index) {
         <div class="carousel-item" [class.active]="$index === 0">
-          <img src="{{ event.image }}"
+          <img [src]="event.image"
                class="d-block w-100"
                alt="Slider Placeholder Image">
           <div class="carousel-caption">

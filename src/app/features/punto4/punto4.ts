@@ -12,17 +12,18 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 })
 export class Punto4 implements OnInit {
   private enrollmentService: EnrollmentService = inject(EnrollmentService);
-  nextEnrollmentId: number = 1;
-  formEnrollment: EnrollmentModel = this.getEmptyFormEnrollment();
+  formEnrollmentModel: EnrollmentModel = this.getEmptyFormEnrollment();
   enrollmentData: EnrollmentModel[] = [];
+  isEditing: boolean = false;
 
   ngOnInit(): void {
+    console.log({ ...this.formEnrollmentModel });
     this.refreshData();
   }
 
   private getEmptyFormEnrollment(): EnrollmentModel {
     return {
-      id: 0,
+      id: -1,
       dni: '',
       price: 0,
       studentCategory: 0,
@@ -34,30 +35,44 @@ export class Punto4 implements OnInit {
   }
 
   calculatePayment(): void {
-    if (this.formEnrollment.price > 0 && this.formEnrollment.studentCategory > 0) {
+    if (this.formEnrollmentModel.price > 0 && this.formEnrollmentModel.studentCategory > 0) {
       let discount: number = 0;
-      const category = Number(this.formEnrollment.studentCategory);
+      const category = Number(this.formEnrollmentModel.studentCategory);
       if (category === 1) {
         discount = 0.35;
       }
       if (category === 2) {
         discount = 0.5;
       }
-      this.formEnrollment.totalPaid = this.formEnrollment.price * (1 - discount);
+      this.formEnrollmentModel.totalPaid = this.formEnrollmentModel.price * (1 - discount);
     } else {
-      this.formEnrollment.totalPaid = 0;
+      this.formEnrollmentModel.totalPaid = 0;
     }
   }
 
   registerEnrollment(): void {
-    this.formEnrollment.id = this.nextEnrollmentId++;
-    this.enrollmentService.addEnrollment({ ...this.formEnrollment });
+    // "..." spread operator: creates a shallow copy of the object spreading its properties into a new one.
+    if (this.formEnrollmentModel.id === -1) {
+      this.enrollmentService.addEnrollment( { ...this.formEnrollmentModel} );
+    } else {
+      this.enrollmentService.updateEnrollment( { ...this.formEnrollmentModel });
+    }
     this.refreshData();
     this.formReset();
   }
 
+  updateEnrollment(enrollment: EnrollmentModel): void {
+    this.isEditing = !this.isEditing;
+    this.formEnrollmentModel = { ...enrollment };
+  }
+
+  deleteEnrollment(id: number): void {
+    this.enrollmentService.deleteEnrollment(id);
+  }
+
   formReset(): void {
-    this.formEnrollment = this.getEmptyFormEnrollment();
+    this.isEditing = false;
+    this.formEnrollmentModel = this.getEmptyFormEnrollment();
   }
 
   private refreshData() {

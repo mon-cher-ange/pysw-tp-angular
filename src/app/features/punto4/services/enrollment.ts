@@ -12,15 +12,28 @@ export class Enrollment {
   }
 
   addEnrollment(enrollment: EnrollmentModel): void {
-    console.log(enrollment.enrollmentDate);
+    enrollment.id = this.findNextId();
     this._enrollments.push(enrollment);
   }
 
-  updateEnrollment(index: number, enrollment: EnrollmentModel): void {
+  updateEnrollment(enrollment: EnrollmentModel): void {
+    let index = this.findIndexById(enrollment.id);
     this._enrollments[index] = enrollment;
   }
 
-  deleteEnrollment(index: number): void {
+  deleteEnrollment(id: number): void {
+    let index = this.findIndexById(id);
     this._enrollments.splice(index, 1);
+  }
+
+  private findIndexById(id: number): number {
+    return this._enrollments.findIndex(e => e.id === id);
+  }
+
+  private findNextId(): number {
+    return this._enrollments.reduce(
+      (max: number, e: EnrollmentModel) => (e.id > max ? e.id : max),
+      -1,
+    ) + 1;
   }
 }

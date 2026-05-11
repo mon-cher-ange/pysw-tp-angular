@@ -9,7 +9,7 @@
                id="dni"
                name="dni"
                placeholder="Ej. 40321654"
-               [(ngModel)]="formEnrollment.dni"
+               [(ngModel)]="formEnrollmentModel.dni"
                required>
       </div>
       <div class="mb-3">
@@ -19,7 +19,7 @@
                id="price"
                name="price"
                placeholder="Ej. 700,45"
-               [(ngModel)]="formEnrollment.price"
+               [(ngModel)]="formEnrollmentModel.price"
                (ngModelChange)="calculatePayment()"
                required>
       </div>
@@ -28,7 +28,7 @@
         <select class="form-select"
                 id="studentCategory"
                 name="studentCategory"
-                [(ngModel)]="formEnrollment.studentCategory"
+                [(ngModel)]="formEnrollmentModel.studentCategory"
                 (ngModelChange)="calculatePayment()">
           <option value="0" disabled>Escoge...</option>
           <option value="1">Estudiante</option>
@@ -36,10 +36,10 @@
           <option value="3">Particular</option>
         </select>
       </div>
-      @if (formEnrollment.price > 0 && formEnrollment.studentCategory > 0) {
+      @if (formEnrollmentModel.price > 0 && formEnrollmentModel.studentCategory > 0) {
         <div class="d-flex flex-column bg-body-tertiary rounded-2 border-light-subtle border p-2">
           <small class="text-body-secondary">Total a pagar</small>
-          <p class="mb-0 text-body-emphasis">{{ formEnrollment.totalPaid | currency:'ARS' }}</p>
+          <p class="mb-0 text-body-emphasis">{{ formEnrollmentModel.totalPaid | currency:'ARS' }}</p>
         </div>
       }
       <div class="mb-3">
@@ -48,7 +48,7 @@
                type="date"
                id="enrollmentDate"
                name="enrollmentDate"
-               [(ngModel)]="formEnrollment.enrollmentDate"
+               [(ngModel)]="formEnrollmentModel.enrollmentDate"
                required>
       </div>
       <div class="mb-3">
@@ -58,7 +58,7 @@
                id="email"
                name="email"
                placeholder="Ej. nombre@dominio.com"
-               [(ngModel)]="formEnrollment.email"
+               [(ngModel)]="formEnrollmentModel.email"
                required>
       </div>
       <div class="mb-3">
@@ -68,12 +68,13 @@
                id="course"
                name="course"
                placeholder="Ej. Matemáticas"
-               [(ngModel)]="formEnrollment.course"
+               [(ngModel)]="formEnrollmentModel.course"
                required>
       </div>
       <button type="submit"
               [disabled]="!enrollmentForm.valid"
-              class="btn btn-light">Registrar
+              class="btn btn-light">
+        {{ isEditing ? 'Actualizar' : 'Registrar' }}
       </button>
     </form>
   </section>
@@ -91,10 +92,11 @@
           <th scope="col">Correo electrónico</th>
           <th scope="col">Curso</th>
           <th scope="col" class="text-end">Total a pagar</th>
+          <th scope="col" class="text-center">Opciones</th>
         </tr>
         </thead>
         <tbody>
-          @for (enrollment of enrollmentData; track enrollment.id) {
+          @for (enrollment of enrollmentData; track enrollment.id;) {
             <tr>
               <th scope="row">{{ enrollment.dni }}</th>
               <td>{{ enrollment.price | currency:'ARS' }}</td>
@@ -105,10 +107,16 @@
               <td>{{ enrollment.email }}</td>
               <td>{{ enrollment.course }}</td>
               <td class="text-end fw-bold">{{ enrollment.totalPaid | currency:'ARS' }}</td>
+              <td>
+                <div class="btn-group" role="group" aria-label="Update and delete buttons">
+                  <button type="button" class="btn btn-light" (click)="updateEnrollment(enrollment)">Modificar</button>
+                  <button type="button" class="btn btn-light" (click)="deleteEnrollment(enrollment.id)">Eliminar</button>
+                </div>
+              </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="7" class="text-center text-body-secondary">
+              <td colspan="8" class="text-center text-body-secondary">
                 No hay registros actualmente.
               </td>
             </tr>
